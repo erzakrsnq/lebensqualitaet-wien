@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Lebensqualität Wien</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>Lebensqualität Wien</h1>
+
+        <p class="description">
+            Finde heraus, wie hoch die Lebensqualität an deiner Adresse ist.
+        </p>
+
+        <form>
+
+            <label for="address">Adresse in Wien</label>
+
+            <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="z. B. Karlsplatz 1, 1010 Wien"
+                required
+            >
+
+            <p class="label">Ich bin:</p>
+
+            <div class="profiles">
+
+                <label>
+                    <input
+                        type="radio"
+                        name="profile"
+                        value="student"
+                        checked
+                    >
+                    Student
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="profile"
+                        value="senior"
+                    >
+                    Senior
+                </label>
+
+            </div>
+
+            <button type="submit">
+                Lebensqualität berechnen
+            </button>
+
+        </form>
+
+    </main>
+
+</body>
+</html>
