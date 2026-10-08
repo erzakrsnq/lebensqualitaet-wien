@@ -82,14 +82,14 @@
                 <div class="progress-track">
                     <div
                         class="progress-fill"
-                        style="width: {{ oeffi_punkte * 10 }}%;">
+                        data-score="{{ oeffi_punkte }}">
                     </div>
                 </div>
             </div>
 
         </section>
 
-        <!-- STATISTIK -->
+        <!-- ÖFFI-STATISTIK -->
         <section class="stats-grid">
 
             <div class="stat-card">
@@ -118,7 +118,7 @@
 
         </section>
 
-        <!-- LINIENLISTE -->
+        <!-- ÖFFI-LINIENLISTE -->
         <section class="lines-card">
 
             <h2>Deine Verkehrsanbindung</h2>
@@ -144,6 +144,8 @@
                                     🚇
                                 {% elif details.category == "Bus" %}
                                     🚌
+                                {% elif details.category == "S-Bahn" %}
+                                    🚆
                                 {% else %}
                                     🚋
                                 {% endif %}
@@ -162,11 +164,15 @@
 
                     </div>
 
+                {% else %}
+
+                    <p>Keine Öffi-Linien im Suchbereich gefunden.</p>
+
                 {% endfor %}
 
             </div>
 
-            <!-- BUTTON ZUM EIN- UND AUSKLAPPEN -->
+            <!-- AUFKLAPP-BUTTON -->
             {% if oeffi_linien|length > 5 %}
 
                 <button
@@ -184,6 +190,76 @@
 
         </section>
 
+        <!-- GRÜNFLÄCHEN -->
+        <section class="lines-card">
+
+            <h2>🌳 Grünflächen</h2>
+
+            <p class="section-description">
+                Öffentlich zugängliche Grünflächen in deiner Nähe.
+                Die Entfernungen werden als Luftlinie berechnet.
+            </p>
+
+            <div class="green-summary">
+
+                <div class="green-grade">
+                    <span>Schulnote</span>
+                    <strong>{{ gruen_note }}</strong>
+                </div>
+
+                <div class="green-details">
+
+                    <p>
+                        <strong>Nächste Grünfläche:</strong>
+
+                        {% if gruen_entfernung is not none %}
+                            {{ "%.0f"|format(gruen_entfernung) }} m
+                        {% else %}
+                            Keine im Suchbereich gefunden
+                        {% endif %}
+                    </p>
+
+                    <p>
+                        <strong>Grünflächen innerhalb von 750 m:</strong>
+                        {{ gruen_anzahl }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <h3>Grünflächen in deiner Nähe</h3>
+
+            {% set sortierte_gruenflaechen =
+                gruenflaechen.items()|sort(attribute="1") %}
+
+            {% for name, entfernung in sortierte_gruenflaechen %}
+
+                {% if loop.index <= 5 %}
+
+                    <div class="line-row">
+
+                        <div class="line-left">
+                            <span class="line-icon">🌿</span>
+                            <strong>{{ name }}</strong>
+                        </div>
+
+                        <span class="line-distance">
+                            {{ "%.0f"|format(entfernung) }} m
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            {% else %}
+
+                <p>Keine Grünflächen im Suchbereich gefunden.</p>
+
+            {% endfor %}
+
+        </section>
+
         <!-- ZURÜCK -->
         <a class="back-button" href="/">
             ← Neue Adresse analysieren
@@ -197,11 +273,16 @@
 
     </div>
 
-    <!-- JAVASCRIPT FÜR DEN BUTTON -->
+    <!-- JAVASCRIPT -->
     <script>
+        // Öffi-Linien ein- und ausklappen
         function toggleLines() {
             const linesList = document.getElementById("linesList");
             const button = document.getElementById("showLinesButton");
+
+            if (!linesList || !button) {
+                return;
+            }
 
             const expanded = linesList.classList.toggle("expanded");
 
@@ -213,6 +294,16 @@
                 button.textContent =
                     "Alle {{ oeffi_linien|length }} Linien anzeigen ↓";
             }
+        }
+
+        // Fortschrittsbalken anhand der Punkte füllen
+        const progressFill = document.querySelector(".progress-fill");
+
+        if (progressFill) {
+            const score = Number(progressFill.dataset.score);
+            const percentage = Math.max(0, Math.min(100, score * 10));
+
+            progressFill.style.width = percentage + "%";
         }
     </script>
 
