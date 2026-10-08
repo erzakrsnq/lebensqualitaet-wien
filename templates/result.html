@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dein Ergebnis – Lebensqualität Wien</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="result-page">
+
+    <div class="result-container">
+
+        <!-- HEADER -->
+        <header class="result-header">
+            <div class="brand">
+                <span class="brand-icon">⌖</span>
+                <div>
+                    <strong>WIENLEBEN</strong>
+                    <small>Lebensqualität entdecken</small>
+                </div>
+            </div>
+
+            <span class="profile-badge">
+                {% if profil == "student" %}
+                    🎓 Student
+                {% else %}
+                    🌿 Senior
+                {% endif %}
+            </span>
+        </header>
+
+        <!-- ADRESSE -->
+        <section class="location-section">
+            <p class="eyebrow">DEINE STANDORTANALYSE</p>
+            <h1>{{ adresse }}</h1>
+            <p>Entdecke, wie gut dein Standort angebunden ist.</p>
+        </section>
+
+        <!-- ÖFFI-BEWERTUNG -->
+        <section class="grade-card">
+
+            <div class="grade-top">
+                <div>
+                    <p class="grade-label">
+                        ÖFFENTLICHE VERKEHRSMITTEL
+                    </p>
+
+                    <h2>
+                        {% if oeffi_note == 1 %}
+                            Sehr gut!
+                        {% elif oeffi_note == 2 %}
+                            Gut!
+                        {% elif oeffi_note == 3 %}
+                            Befriedigend
+                        {% elif oeffi_note == 4 %}
+                            Genügend
+                        {% else %}
+                            Verbesserungswürdig
+                        {% endif %}
+                    </h2>
+
+                    <p>Deine Öffi-Anbindung im Umkreis von 1 km.</p>
+                </div>
+
+                <div class="grade-circle">
+                    <span>{{ oeffi_note }}</span>
+                    <small>SCHULNOTE</small>
+                </div>
+            </div>
+
+            <!-- PUNKTEBALKEN -->
+            <div class="score-panel">
+                <div class="score-labels">
+                    <span>Erreichte Punkte</span>
+                    <strong>
+                        {{ "%.2f"|format(oeffi_punkte) }} / 10
+                    </strong>
+                </div>
+
+                <div class="progress-track">
+                    <div
+                        class="progress-fill"
+                        style="width: {{ oeffi_punkte * 10 }}%;">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- STATISTIK -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-icon">🚇</span>
+                <strong>{{ oeffi_linien|length }}</strong>
+                <p>Erkannte Linien</p>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">📍</span>
+
+                <strong>
+                    {% if oeffi_linien %}
+                        {{ "%.0f"|format(
+                            oeffi_linien.values()
+                            |map(attribute="distance")
+                            |min
+                        ) }} m
+                    {% else %}
+                        –
+                    {% endif %}
+                </strong>
+
+                <p>Nächste berücksichtigte Linie</p>
+            </div>
+
+        </section>
+
+        <!-- LINIENLISTE -->
+        <section class="lines-card">
+
+            <h2>Deine Verkehrsanbindung</h2>
+
+            <p class="section-description">
+                Diese Linien wurden bei deiner Bewertung berücksichtigt.
+                Die nächstgelegenen Linien stehen zuerst.
+            </p>
+
+            {% set sortierte_linien = oeffi_linien.items()
+                |sort(attribute="1.distance") %}
+
+            <div class="lines-list" id="linesList">
+
+                {% for linie, details in sortierte_linien %}
+
+                    <div class="line-row {% if loop.index > 5 %}extra-line{% endif %}">
+
+                        <div class="line-left">
+
+                            <span class="line-icon">
+                                {% if details.category == "U-Bahn" %}
+                                    🚇
+                                {% elif details.category == "Bus" %}
+                                    🚌
+                                {% else %}
+                                    🚋
+                                {% endif %}
+                            </span>
+
+                            <div>
+                                <strong>{{ linie }}</strong>
+                                <small>{{ details.category }}</small>
+                            </div>
+
+                        </div>
+
+                        <span class="line-distance">
+                            {{ "%.0f"|format(details.distance) }} m
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- BUTTON ZUM EIN- UND AUSKLAPPEN -->
+            {% if oeffi_linien|length > 5 %}
+
+                <button
+                    type="button"
+                    class="show-lines-button"
+                    id="showLinesButton"
+                    aria-expanded="false"
+                    aria-controls="linesList"
+                    onclick="toggleLines()"
+                >
+                    Alle {{ oeffi_linien|length }} Linien anzeigen ↓
+                </button>
+
+            {% endif %}
+
+        </section>
+
+        <!-- ZURÜCK -->
+        <a class="back-button" href="/">
+            ← Neue Adresse analysieren
+        </a>
+
+        <!-- FOOTER -->
+        <p class="result-footer">
+            Datenquelle: Open Data Stadt Wien ·
+            Entfernungen als Luftlinie
+        </p>
+
+    </div>
+
+    <!-- JAVASCRIPT FÜR DEN BUTTON -->
+    <script>
+        function toggleLines() {
+            const linesList = document.getElementById("linesList");
+            const button = document.getElementById("showLinesButton");
+
+            const expanded = linesList.classList.toggle("expanded");
+
+            button.setAttribute("aria-expanded", String(expanded));
+
+            if (expanded) {
+                button.textContent = "Weniger Linien anzeigen ↑";
+            } else {
+                button.textContent =
+                    "Alle {{ oeffi_linien|length }} Linien anzeigen ↓";
+            }
+        }
+    </script>
+
+</body>
+</html>

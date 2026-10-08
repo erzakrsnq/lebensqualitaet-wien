@@ -64,3 +64,365 @@ button {
 button:hover {
     background-color: #105f3b;
 }
+
+/* ===================================
+   ERGEBNISSEITE
+=================================== */
+
+.result-page {
+    background: #f3f7f6;
+    color: #102b36;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.result-page * {
+    box-sizing: border-box;
+}
+
+.result-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+}
+
+.result-header {
+    background: white;
+    border-radius: 18px;
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    background: #ddf3e8;
+    color: #17684e;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.brand strong,
+.brand small {
+    display: block;
+}
+
+.brand strong {
+    font-size: 17px;
+    letter-spacing: 1px;
+}
+
+.brand small {
+    font-size: 12px;
+    color: #648077;
+    margin-top: 3px;
+}
+
+.profile-badge {
+    background: #edf5f1;
+    color: #17684e;
+    border-radius: 30px;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.location-section {
+    margin-bottom: 28px;
+}
+
+.eyebrow {
+    color: #648077;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.location-section h1 {
+    font-size: 36px;
+    margin: 10px 0;
+    color: #102b36;
+}
+
+.location-section > p:last-child {
+    color: #648077;
+}
+
+.grade-card {
+    background: #123b35;
+    color: white;
+    border-radius: 22px;
+    padding: 32px;
+    margin-bottom: 20px;
+}
+
+.grade-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+}
+
+.grade-label {
+    color: #b4d7c9;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.grade-top h2 {
+    color: white;
+    font-size: 34px;
+    margin: 12px 0;
+}
+
+.grade-top p:last-child {
+    color: #d1e4dd;
+}
+
+.grade-circle {
+    background: #ddf5e8;
+    color: #17684e;
+    min-width: 115px;
+    height: 115px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.grade-circle span {
+    font-size: 55px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.grade-circle small {
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.score-panel {
+    background: #28534b;
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 25px;
+}
+
+.score-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.progress-track {
+    height: 9px;
+    background: #52756d;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #a5e5bc;
+    border-radius: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.stat-icon {
+    display: block;
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 32px;
+    color: #102b36;
+}
+
+.stat-card p {
+    color: #648077;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.lines-card {
+    background: white;
+    border-radius: 18px;
+    padding: 28px;
+}
+
+.lines-card h2 {
+    margin-top: 0;
+    color: #102b36;
+}
+
+.section-description {
+    color: #648077;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.line-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #edf1ef;
+}
+
+.line-row:last-child {
+    border-bottom: none;
+}
+
+.line-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.line-icon {
+    background: #e8f3ee;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}
+
+.line-left strong,
+.line-left small {
+    display: block;
+}
+
+.line-left small {
+    color: #648077;
+    margin-top: 4px;
+}
+
+.line-distance {
+    color: #17684e;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.back-button {
+    display: block;
+    background: #17684e;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 14px;
+    padding: 17px;
+    font-weight: bold;
+    margin-top: 25px;
+}
+
+.back-button:hover {
+    background: #10543e;
+}
+
+.result-footer {
+    text-align: center;
+    color: #648077;
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+@media (max-width: 600px) {
+    .result-header {
+        padding: 15px;
+    }
+
+    .location-section h1 {
+        font-size: 28px;
+    }
+
+    .grade-card {
+        padding: 22px;
+    }
+
+    .grade-top h2 {
+        font-size: 26px;
+    }
+
+    .grade-circle {
+        min-width: 85px;
+        height: 90px;
+    }
+
+    .grade-circle span {
+        font-size: 42px;
+    }
+
+    .stat-card {
+        padding: 17px;
+    }
+}
+
+/* Öffi-Linien ein- und ausklappen */
+
+.extra-line {
+    display: none;
+}
+
+.lines-list.expanded .extra-line {
+    display: flex;
+}
+
+.show-lines-button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    background: #edf5f1;
+    color: #17684e;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.show-lines-button:hover {
+    background: #ddf3e8;
+}
+
+.show-lines-button:focus-visible {
+    outline: 3px solid #17684e;
+    outline-offset: 3px;
+}

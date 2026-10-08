@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
+from transport import calculate_transport_grade
 import requests
+
 app = Flask(__name__)
+
 
 def get_coordinates(address):
     url = "https://data.wien.gv.at/daten/OGDAddressService.svc/GetAddressInfo"
@@ -26,7 +29,7 @@ def get_coordinates(address):
 
         return latitude, longitude
 
-    except requests.RequestException:
+    except (requests.RequestException, ValueError, KeyError, IndexError, TypeError):
         return None
 
 
@@ -37,8 +40,14 @@ def home():
 
 @app.route("/berechnen", methods=["POST"])
 def berechnen():
-    adresse = request.form.get("address")
+    adresse = (request.form.get("address") or "").strip()
     profil = request.form.get("profile")
+
+    if not adresse:
+        return """
+            <h1>Bitte eine Adresse eingeben</h1>
+            <a href="/">Zurück</a>
+        """, 400
 
     coordinates = get_coordinates(adresse)
 
@@ -47,17 +56,32 @@ def berechnen():
             <h1>Adresse nicht gefunden</h1>
             <p>Bitte gib eine gültige Wiener Adresse ein.</p>
             <a href="/">Zurück</a>
-        """
+        """, 400
 
     latitude, longitude = coordinates
 
-    return f"""
-        <h1>Adresse gefunden!</h1>
-        <p>Adresse: {adresse}</p>
-        <p>Profil: {profil}</p>
-        <p>Breitengrad: {latitude}</p>
-        <p>Längengrad: {longitude}</p>
-        <a href="/">Zurück</a>
-    """
+    try:
+        oeffi_note, oeffi_punkte, oeffi_linien = calculate_transport_grade(
+            latitude, longitude
+        )
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        return """
+            <h1>Öffi-Daten momentan nicht verfügbar</h1>
+            <p>Bitte versuche es später erneut.</p>
+            <a href="/">Zurück</a>
+        """, 503
+
+    return render_template(
+        "result.html",
+        adresse=adresse,
+        profil=profil,
+        latitude=latitude,
+        longitude=longitude,
+        oeffi_note=oeffi_note,
+        oeffi_punkte=oeffi_punkte,
+        oeffi_linien=oeffi_linien
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
