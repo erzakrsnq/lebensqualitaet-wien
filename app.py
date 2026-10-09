@@ -1,8 +1,9 @@
-
 from flask import Flask, render_template, request
+import requests
+
 from transport import calculate_transport_grade
 from green import calculate_green_grade
-import requests
+from education import calculate_education_grade
 
 app = Flask(__name__)
 
@@ -52,66 +53,88 @@ def berechnen():
     profil = request.form.get("profile")
 
     if not adresse:
-        return """
-            <h1>Bitte eine Adresse eingeben</h1>
-            <a href="/">Zurück</a>
-        """, 400
+        return (
+            '<h1>Bitte eine Adresse eingeben</h1>'
+            '<a href="/">Zurück</a>',
+            400
+        )
 
     coordinates = get_coordinates(adresse)
 
     if coordinates is None:
-        return """
-            <h1>Adresse nicht gefunden</h1>
-            <p>Bitte gib eine gültige Wiener Adresse ein.</p>
-            <a href="/">Zurück</a>
-        """, 400
+        return (
+            '<h1>Adresse nicht gefunden</h1>'
+            '<p>Bitte gib eine gültige Wiener Adresse ein.</p>'
+            '<a href="/">Zurück</a>',
+            400
+        )
 
     latitude, longitude = coordinates
 
-    # 1. Öffentliche Verkehrsmittel berechnen
+    # 1. Öffentliche Verkehrsmittel
     try:
-        oeffi_note, oeffi_punkte, oeffi_linien = (
-            calculate_transport_grade(latitude, longitude)
+        oeffi_note, oeffi_punkte, oeffi_linien = calculate_transport_grade(
+            latitude,
+            longitude
         )
 
     except (requests.RequestException, ValueError, KeyError, TypeError):
-        return """
-            <h1>Öffi-Daten momentan nicht verfügbar</h1>
-            <p>Bitte versuche es später erneut.</p>
-            <a href="/">Zurück</a>
-        """, 503
-
-    # 2. Grünflächen berechnen
-    try:
-        gruen_note, gruen_entfernung, gruen_anzahl, gruenflaechen = (
-            calculate_green_grade(latitude, longitude)
+        return (
+            '<h1>Öffi-Daten momentan nicht verfügbar</h1>'
+            '<p>Bitte versuche es später erneut.</p>'
+            '<a href="/">Zurück</a>',
+            503
         )
 
-    except (requests.RequestException, ValueError, KeyError, TypeError):
-        return """
-            <h1>Grünflächen-Daten momentan nicht verfügbar</h1>
-            <p>Bitte versuche es später erneut.</p>
-            <a href="/">Zurück</a>
-        """, 503
+    # 2. Grünflächen
+    try:
+        (
+            gruen_note,
+            gruen_entfernung,
+            gruen_anzahl,
+            gruenflaechen
+        ) = calculate_green_grade(latitude, longitude)
 
-    # 3. Ergebnisse an die Webseite übergeben
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        return (
+            '<h1>Grünflächen-Daten momentan nicht verfügbar</h1>'
+            '<p>Bitte versuche es später erneut.</p>'
+            '<a href="/">Zurück</a>',
+            503
+        )
+
+    # 3. Bildung
+    try:
+        (
+            bildung_note,
+            bildung_punkte,
+            bildung_einrichtungen
+        ) = calculate_education_grade(latitude, longitude)
+
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        return (
+            '<h1>Bildungsdaten momentan nicht verfügbar</h1>'
+            '<p>Bitte versuche es später erneut.</p>'
+            '<a href="/">Zurück</a>',
+            503
+        )
+
     return render_template(
         "result.html",
         adresse=adresse,
         profil=profil,
         latitude=latitude,
         longitude=longitude,
-
-        # Öffentliche Verkehrsmittel
         oeffi_note=oeffi_note,
         oeffi_punkte=oeffi_punkte,
         oeffi_linien=oeffi_linien,
-
-        # Grünflächen
         gruen_note=gruen_note,
         gruen_entfernung=gruen_entfernung,
         gruen_anzahl=gruen_anzahl,
-        gruenflaechen=gruenflaechen
+        gruenflaechen=gruenflaechen,
+        bildung_note=bildung_note,
+        bildung_punkte=bildung_punkte,
+        bildung_einrichtungen=bildung_einrichtungen
     )
 
 

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -10,302 +9,376 @@
 
 <body class="result-page">
 
-    <div class="result-container">
+<div class="result-container">
 
-        <!-- HEADER -->
-        <header class="result-header">
-            <div class="brand">
-                <span class="brand-icon">⌖</span>
-                <div>
-                    <strong>WIENLEBEN</strong>
-                    <small>Lebensqualität entdecken</small>
-                </div>
+    <header class="result-header">
+        <div class="brand">
+            <span class="brand-icon">⌖</span>
+            <div>
+                <strong>WIENLEBEN</strong>
+                <small>Lebensqualität entdecken</small>
             </div>
+        </div>
 
-            <span class="profile-badge">
-                {% if profil == "student" %}
-                    🎓 Student
-                {% else %}
-                    🌿 Senior
-                {% endif %}
-            </span>
-        </header>
-
-        <!-- ADRESSE -->
-        <section class="location-section">
-            <p class="eyebrow">DEINE STANDORTANALYSE</p>
-            <h1>{{ adresse }}</h1>
-            <p>Entdecke, wie gut dein Standort angebunden ist.</p>
-        </section>
-
-        <!-- ÖFFI-BEWERTUNG -->
-        <section class="grade-card">
-
-            <div class="grade-top">
-                <div>
-                    <p class="grade-label">
-                        ÖFFENTLICHE VERKEHRSMITTEL
-                    </p>
-
-                    <h2>
-                        {% if oeffi_note == 1 %}
-                            Sehr gut!
-                        {% elif oeffi_note == 2 %}
-                            Gut!
-                        {% elif oeffi_note == 3 %}
-                            Befriedigend
-                        {% elif oeffi_note == 4 %}
-                            Genügend
-                        {% else %}
-                            Verbesserungswürdig
-                        {% endif %}
-                    </h2>
-
-                    <p>Deine Öffi-Anbindung im Umkreis von 1 km.</p>
-                </div>
-
-                <div class="grade-circle">
-                    <span>{{ oeffi_note }}</span>
-                    <small>SCHULNOTE</small>
-                </div>
-            </div>
-
-            <!-- PUNKTEBALKEN -->
-            <div class="score-panel">
-                <div class="score-labels">
-                    <span>Erreichte Punkte</span>
-                    <strong>
-                        {{ "%.2f"|format(oeffi_punkte) }} / 10
-                    </strong>
-                </div>
-
-                <div class="progress-track">
-                    <div
-                        class="progress-fill"
-                        data-score="{{ oeffi_punkte }}">
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- ÖFFI-STATISTIK -->
-        <section class="stats-grid">
-
-            <div class="stat-card">
-                <span class="stat-icon">🚇</span>
-                <strong>{{ oeffi_linien|length }}</strong>
-                <p>Erkannte Linien</p>
-            </div>
-
-            <div class="stat-card">
-                <span class="stat-icon">📍</span>
-
-                <strong>
-                    {% if oeffi_linien %}
-                        {{ "%.0f"|format(
-                            oeffi_linien.values()
-                            |map(attribute="distance")
-                            |min
-                        ) }} m
-                    {% else %}
-                        –
-                    {% endif %}
-                </strong>
-
-                <p>Nächste berücksichtigte Linie</p>
-            </div>
-
-        </section>
-
-        <!-- ÖFFI-LINIENLISTE -->
-        <section class="lines-card">
-
-            <h2>Deine Verkehrsanbindung</h2>
-
-            <p class="section-description">
-                Diese Linien wurden bei deiner Bewertung berücksichtigt.
-                Die nächstgelegenen Linien stehen zuerst.
-            </p>
-
-            {% set sortierte_linien = oeffi_linien.items()
-                |sort(attribute="1.distance") %}
-
-            <div class="lines-list" id="linesList">
-
-                {% for linie, details in sortierte_linien %}
-
-                    <div class="line-row {% if loop.index > 5 %}extra-line{% endif %}">
-
-                        <div class="line-left">
-
-                            <span class="line-icon">
-                                {% if details.category == "U-Bahn" %}
-                                    🚇
-                                {% elif details.category == "Bus" %}
-                                    🚌
-                                {% elif details.category == "S-Bahn" %}
-                                    🚆
-                                {% else %}
-                                    🚋
-                                {% endif %}
-                            </span>
-
-                            <div>
-                                <strong>{{ linie }}</strong>
-                                <small>{{ details.category }}</small>
-                            </div>
-
-                        </div>
-
-                        <span class="line-distance">
-                            {{ "%.0f"|format(details.distance) }} m
-                        </span>
-
-                    </div>
-
-                {% else %}
-
-                    <p>Keine Öffi-Linien im Suchbereich gefunden.</p>
-
-                {% endfor %}
-
-            </div>
-
-            <!-- AUFKLAPP-BUTTON -->
-            {% if oeffi_linien|length > 5 %}
-
-                <button
-                    type="button"
-                    class="show-lines-button"
-                    id="showLinesButton"
-                    aria-expanded="false"
-                    aria-controls="linesList"
-                    onclick="toggleLines()"
-                >
-                    Alle {{ oeffi_linien|length }} Linien anzeigen ↓
-                </button>
-
+        <span class="profile-badge">
+            {% if profil == "student" %}
+                🎓 Student
+            {% else %}
+                🌿 Senior
             {% endif %}
+        </span>
+    </header>
 
-        </section>
+    <section class="location-section">
+        <p class="eyebrow">DEINE STANDORTANALYSE</p>
+        <h1>{{ adresse }}</h1>
+        <p>Entdecke die Angebote und Einrichtungen rund um deinen Standort.</p>
+    </section>
 
-        <!-- GRÜNFLÄCHEN -->
-        <section class="lines-card">
+    <!-- ÖFFENTLICHE VERKEHRSMITTEL -->
 
-            <h2>🌳 Grünflächen</h2>
+    <section class="grade-card">
 
-            <p class="section-description">
-                Öffentlich zugängliche Grünflächen in deiner Nähe.
-                Die Entfernungen werden als Luftlinie berechnet.
-            </p>
+        <div class="grade-top">
 
-            <div class="green-summary">
+            <div>
+                <p class="grade-label">ÖFFENTLICHE VERKEHRSMITTEL</p>
 
-                <div class="green-grade">
-                    <span>Schulnote</span>
-                    <strong>{{ gruen_note }}</strong>
-                </div>
+                <h2>
+                    {% if oeffi_note == 1 %}
+                        Sehr gut!
+                    {% elif oeffi_note == 2 %}
+                        Gut!
+                    {% elif oeffi_note == 3 %}
+                        Befriedigend
+                    {% elif oeffi_note == 4 %}
+                        Genügend
+                    {% else %}
+                        Verbesserungswürdig
+                    {% endif %}
+                </h2>
 
-                <div class="green-details">
-
-                    <p>
-                        <strong>Nächste Grünfläche:</strong>
-
-                        {% if gruen_entfernung is not none %}
-                            {{ "%.0f"|format(gruen_entfernung) }} m
-                        {% else %}
-                            Keine im Suchbereich gefunden
-                        {% endif %}
-                    </p>
-
-                    <p>
-                        <strong>Grünflächen innerhalb von 750 m:</strong>
-                        {{ gruen_anzahl }}
-                    </p>
-
-                </div>
-
+                <p>Deine Öffi-Anbindung im Umkreis von 1 km.</p>
             </div>
 
-            <h3>Grünflächen in deiner Nähe</h3>
+            <div class="grade-circle">
+                <span>{{ oeffi_note }}</span>
+                <small>SCHULNOTE</small>
+            </div>
 
-            {% set sortierte_gruenflaechen =
-                gruenflaechen.items()|sort(attribute="1") %}
+        </div>
 
-            {% for name, entfernung in sortierte_gruenflaechen %}
+        <div class="score-panel">
 
-                {% if loop.index <= 5 %}
+            <div class="score-labels">
+                <span>Erreichte Punkte</span>
+                <strong>{{ "%.2f"|format(oeffi_punkte) }} / 10</strong>
+            </div>
 
-                    <div class="line-row">
+            <div class="progress-track">
+                <div class="progress-fill"
+                     data-score="{{ oeffi_punkte }}">
+                </div>
+            </div>
 
-                        <div class="line-left">
-                            <span class="line-icon">🌿</span>
-                            <strong>{{ name }}</strong>
-                        </div>
+        </div>
 
-                        <span class="line-distance">
-                            {{ "%.0f"|format(entfernung) }} m
+    </section>
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+            <span class="stat-icon">🚇</span>
+            <strong>{{ oeffi_linien|length }}</strong>
+            <p>Erkannte Linien</p>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-icon">📍</span>
+
+            <strong>
+                {% if oeffi_linien %}
+                    {{ "%.0f"|format(
+                        oeffi_linien.values()
+                        |map(attribute="distance")
+                        |min
+                    ) }} m
+                {% else %}
+                    –
+                {% endif %}
+            </strong>
+
+            <p>Nächste berücksichtigte Linie</p>
+        </div>
+
+    </section>
+
+    <section class="lines-card">
+
+        <h2>Deine Verkehrsanbindung</h2>
+
+        <p class="section-description">
+            Diese Linien wurden bei deiner Bewertung berücksichtigt.
+            Die nächstgelegenen Linien stehen zuerst.
+        </p>
+
+        {% set sortierte_linien =
+            oeffi_linien.items()|sort(attribute="1.distance")
+        %}
+
+        <div class="lines-list" id="linesList">
+
+            {% for linie, details in sortierte_linien %}
+
+                <div class="line-row {% if loop.index > 5 %}extra-line{% endif %}">
+
+                    <div class="line-left">
+
+                        <span class="line-icon">
+                            {% if details.category == "U-Bahn" %}
+                                🚇
+                            {% elif details.category == "Bus" %}
+                                🚌
+                            {% elif details.category == "S-Bahn" %}
+                                🚆
+                            {% else %}
+                                🚋
+                            {% endif %}
                         </span>
+
+                        <div>
+                            <strong>{{ linie }}</strong>
+                            <small>{{ details.category }}</small>
+                        </div>
 
                     </div>
 
-                {% endif %}
+                    <span class="line-distance">
+                        {{ "%.0f"|format(details.distance) }} m
+                    </span>
+
+                </div>
 
             {% else %}
 
-                <p>Keine Grünflächen im Suchbereich gefunden.</p>
+                <p>Keine Öffi-Linien im Suchbereich gefunden.</p>
 
             {% endfor %}
 
-        </section>
+        </div>
 
-        <!-- ZURÜCK -->
-        <a class="back-button" href="/">
-            ← Neue Adresse analysieren
-        </a>
+        {% if oeffi_linien|length > 5 %}
 
-        <!-- FOOTER -->
-        <p class="result-footer">
-            Datenquelle: Open Data Stadt Wien ·
-            Entfernungen als Luftlinie
+            <button
+                type="button"
+                class="show-lines-button"
+                id="showLinesButton"
+                aria-expanded="false"
+                aria-controls="linesList"
+                onclick="toggleLines()"
+            >
+                Alle {{ oeffi_linien|length }} Linien anzeigen ↓
+            </button>
+
+        {% endif %}
+
+    </section>
+
+    <!-- GRÜNFLÄCHEN -->
+
+    <section class="lines-card">
+
+        <h2>🌳 Grünflächen</h2>
+
+        <p class="section-description">
+            Öffentlich zugängliche Grünflächen in deiner Nähe.
+            Die Entfernungen werden als Luftlinie berechnet.
         </p>
 
-    </div>
+        <div class="green-summary">
 
-    <!-- JAVASCRIPT -->
-    <script>
-        // Öffi-Linien ein- und ausklappen
-        function toggleLines() {
-            const linesList = document.getElementById("linesList");
-            const button = document.getElementById("showLinesButton");
+            <div class="green-grade">
+                <span>Schulnote</span>
+                <strong>{{ gruen_note }}</strong>
+            </div>
 
-            if (!linesList || !button) {
-                return;
-            }
+            <div class="green-details">
 
-            const expanded = linesList.classList.toggle("expanded");
+                <p>
+                    <strong>Nächste Grünfläche:</strong>
 
-            button.setAttribute("aria-expanded", String(expanded));
+                    {% if gruen_entfernung is not none %}
+                        {{ "%.0f"|format(gruen_entfernung) }} m
+                    {% else %}
+                        Keine im Suchbereich gefunden
+                    {% endif %}
+                </p>
 
-            if (expanded) {
-                button.textContent = "Weniger Linien anzeigen ↑";
-            } else {
-                button.textContent =
-                    "Alle {{ oeffi_linien|length }} Linien anzeigen ↓";
-            }
+                <p>
+                    <strong>Grünflächen innerhalb von 750 m:</strong>
+                    {{ gruen_anzahl }}
+                </p>
+
+            </div>
+
+        </div>
+
+        <h3>Grünflächen in deiner Nähe</h3>
+
+        {% set sortierte_gruenflaechen =
+            gruenflaechen.items()|sort(attribute="1")
+        %}
+
+        {% for name, entfernung in sortierte_gruenflaechen %}
+
+            {% if loop.index <= 5 %}
+
+                <div class="line-row">
+
+                    <div class="line-left">
+                        <span class="line-icon">🌿</span>
+                        <strong>{{ name }}</strong>
+                    </div>
+
+                    <span class="line-distance">
+                        {{ "%.0f"|format(entfernung) }} m
+                    </span>
+
+                </div>
+
+            {% endif %}
+
+        {% else %}
+
+            <p>Keine Grünflächen im Suchbereich gefunden.</p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- BILDUNG -->
+
+    <section class="lines-card">
+
+        <h2>🎓 Bildung</h2>
+
+        <p class="section-description">
+            Universitäten, Fachhochschulen, Büchereien,
+            Schulen und Volkshochschulen im Umkreis von 3 km.
+            Die Entfernung beeinflusst die Bewertung.
+        </p>
+
+        <div class="green-summary">
+
+            <div class="green-grade">
+                <span>Schulnote</span>
+                <strong>{{ bildung_note }}</strong>
+            </div>
+
+            <div class="green-details">
+
+                <p>
+                    <strong>Bildungspunkte:</strong>
+                    {{ "%.2f"|format(bildung_punkte) }}
+                </p>
+
+                <p>
+                    <strong>Gefundene Einrichtungen:</strong>
+                    {{ bildung_einrichtungen|length }}
+                </p>
+
+            </div>
+
+        </div>
+
+        <h3>Bildungseinrichtungen in deiner Nähe</h3>
+
+        {% for einrichtung in bildung_einrichtungen[:5] %}
+
+            <div class="line-row">
+
+                <div class="line-left">
+
+                    <span class="line-icon">
+                        {% if einrichtung.category == "Universität / FH" %}
+                            🎓
+                        {% elif einrichtung.category == "Bücherei" %}
+                            📚
+                        {% elif einrichtung.category == "Schule" %}
+                            🏫
+                        {% else %}
+                            📖
+                        {% endif %}
+                    </span>
+
+                    <div>
+                        <strong>{{ einrichtung.name }}</strong>
+                        <small>{{ einrichtung.category }}</small>
+                    </div>
+
+                </div>
+
+                <span class="line-distance">
+                    {{ "%.0f"|format(einrichtung.distance) }} m
+                </span>
+
+            </div>
+
+        {% else %}
+
+            <p>Keine Bildungseinrichtungen im Suchbereich gefunden.</p>
+
+        {% endfor %}
+
+    </section>
+
+    <a class="back-button" href="/">
+        ← Neue Adresse analysieren
+    </a>
+
+    <p class="result-footer">
+        Datenquelle: Open Data Stadt Wien ·
+        Entfernungen als Luftlinie
+    </p>
+
+</div>
+
+<script>
+    function toggleLines() {
+        const linesList = document.getElementById("linesList");
+        const button = document.getElementById("showLinesButton");
+
+        if (!linesList || !button) {
+            return;
         }
 
-        // Fortschrittsbalken anhand der Punkte füllen
-        const progressFill = document.querySelector(".progress-fill");
+        const expanded = linesList.classList.toggle("expanded");
 
-        if (progressFill) {
-            const score = Number(progressFill.dataset.score);
-            const percentage = Math.max(0, Math.min(100, score * 10));
+        button.setAttribute(
+            "aria-expanded",
+            String(expanded)
+        );
 
-            progressFill.style.width = percentage + "%";
+        if (expanded) {
+            button.textContent = "Weniger Linien anzeigen ↑";
+        } else {
+            button.textContent =
+                "Alle {{ oeffi_linien|length }} Linien anzeigen ↓";
         }
-    </script>
+    }
+
+    const progressFill = document.querySelector(".progress-fill");
+
+    if (progressFill) {
+        const score = Number(progressFill.dataset.score);
+        const percentage = Math.max(
+            0,
+            Math.min(100, score * 10)
+        );
+
+        progressFill.style.width = percentage + "%";
+    }
+</script>
 
 </body>
 </html>
