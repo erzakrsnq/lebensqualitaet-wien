@@ -133,8 +133,6 @@ def get_nearby_education(latitude, longitude, radius=3000):
                 ):
                     facilities[unique_key] = facility
 
-    # Wichtig: Diese Zeile gehört zur Funktion,
-    # aber NICHT in die for-Schleife.
     return sorted(
         facilities.values(),
         key=lambda facility: facility["distance"]

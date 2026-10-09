@@ -52,9 +52,9 @@
         </p>
 
         <p class="overall-weights">
-            Öffis: {{ (gewichtung.transport * 100)|int }} % ·
-            Grünflächen: {{ (gewichtung.green * 100)|int }} % ·
-            Bildung: {{ (gewichtung.education * 100)|int }} %
+            Öffis: {{ (gewichtung.transport * 100)|round|int }} % ·
+            Grünflächen: {{ (gewichtung.green * 100)|round|int }} % ·
+            Bildung: {{ (gewichtung.education * 100)|round|int }} %
         </p>
 
         <p class="overall-explanation">
@@ -121,10 +121,7 @@
     </section>
 
     <!-- DETAILS: ÖFFIS -->
-    <section
-        class="category-details"
-        id="detail-transport"
-    >
+    <section class="category-details" id="detail-transport">
         <div class="detail-heading">
             <div>
                 <h2>🚇 Öffentliche Verkehrsmittel</h2>
@@ -338,6 +335,90 @@
         {% endfor %}
     </section>
 
+    <!-- ERKLÄRUNG DES ALGORITHMUS -->
+
+<!-- ERKLÄRUNG DES ALGORITHMUS -->
+
+<!-- ERKLÄRUNG DES ALGORITHMUS -->
+<details
+    class="algorithm-explanation"
+    style="background:white;border-radius:20px;padding:24px 28px;margin:20px 0;"
+>
+    <summary style="cursor:pointer;color:#17684e;font-weight:bold;font-size:18px;">
+        🧮 Wie wird meine Note berechnet?
+    </summary>
+
+    <div style="line-height:1.7;margin-top:18px;">
+
+        <p>
+            Für <strong>{{ adresse }}</strong> werden drei Bereiche
+            anhand von Open Data der Stadt Wien bewertet.
+            Die Entfernungen werden als Luftlinie berechnet.
+        </p>
+
+        <p>
+            🚇 <strong>Öffis – Note {{ oeffi_note }}</strong><br>
+            Verkehrslinien innerhalb von 1 km erhalten Punkte:
+            U-Bahn 4, S-Bahn und Straßenbahn 3, Bus 1.
+            Je weiter entfernt, desto weniger Punkte.
+            Ab 8 Punkten gibt es Note 1, ab 6 Note 2,
+            ab 4 Note 3 und ab 2 Note 4.<br>
+            <strong>Dein Ergebnis:</strong>
+            {{ "%.2f"|format(oeffi_punkte) }} von 10 Punkten.
+        </p>
+
+        <p>
+            🌳 <strong>Grünflächen – Note {{ gruen_note }}</strong><br>
+            Je näher die nächste Grünfläche, desto besser:
+            bis 200 m Note 1, bis 400 m Note 2,
+            bis 700 m Note 3 und bis 1 km Note 4.
+            Ab drei Grünflächen innerhalb von 750 m
+            verbessert sich die Note um eine Stufe.<br>
+            <strong>Dein Ergebnis:</strong>
+            {{ gruen_anzahl }} Grünflächen innerhalb von 750 m.
+        </p>
+
+        <p>
+            🎓 <strong>Bildung – Note {{ bildung_note }}</strong><br>
+            Bildungseinrichtungen innerhalb von 3 km werden
+            nach Art und Entfernung bewertet:
+            Universität/FH 4 Punkte, Bücherei 2,
+            Schule und Volkshochschule je 1.
+            Ab 6 Punkten gibt es Note 1, ab 4,5 Note 2,
+            ab 3 Note 3 und ab 1,5 Note 4.<br>
+            <strong>Dein Ergebnis:</strong>
+            {{ "%.2f"|format(bildung_punkte) }} Punkte.
+        </p>
+
+        <hr style="border:0;border-top:1px solid #e5ece9;margin:20px 0;">
+
+        <p>
+            📊 <strong>Berechnung deiner Gesamtnote</strong><br>
+            {% if profil == "senior" %}
+                Für Senioren zählen Öffis und Grünflächen stärker.
+            {% else %}
+                Für Studierende zählen Öffis und Bildung stärker.
+            {% endif %}
+        </p>
+
+        <p>
+            {{ oeffi_note }} × {{ (gewichtung.transport * 100)|round|int }} %
+            + {{ gruen_note }} × {{ (gewichtung.green * 100)|round|int }} %
+            + {{ bildung_note }} × {{ (gewichtung.education * 100)|round|int }} %
+            = <strong>{{ "%.2f"|format(gesamtnote) }}</strong>
+        </p>
+
+        <p>
+            <strong>Deine gerundete Schulnote:
+            {{ (gesamtnote + 0.5)|int }}</strong><br>
+            1 = sehr gut, 5 = nicht genügend.
+        </p>
+
+    </div>
+</details>
+
+
+
     <a class="back-button" href="/">
         ← Neue Adresse analysieren
     </a>
@@ -369,6 +450,7 @@
                 button.setAttribute("aria-expanded", String(isActive));
 
                 const action = button.querySelector(".category-action");
+
                 if (action) {
                     action.textContent = isActive
                         ? "Details geöffnet ↑"
@@ -403,10 +485,12 @@
     if (progressFill) {
         const score = Number(progressFill.dataset.score);
         const percentage = Math.max(0, Math.min(100, score * 10));
+
         progressFill.style.width = percentage + "%";
     }
 
     showCategory("transport");
 </script>
+
 </body>
 </html>

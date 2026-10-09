@@ -50,10 +50,6 @@ def distance_to_segment(latitude, longitude, point_a, point_b):
 
 
 def distance_to_geometry(latitude, longitude, geometry):
-    """
-    Berechnet die Entfernung zur nächsten Stelle
-    einer LineString- oder MultiLineString-Geometrie.
-    """
 
     geometry_type = geometry.get("type")
     coordinates = geometry.get("coordinates", [])
@@ -93,11 +89,6 @@ def distance_to_geometry(latitude, longitude, geometry):
 
 
 def get_nearby_green_spaces(latitude, longitude, radius=1200):
-    """
-    Ruft Grünflächenlinien im Umfeld einer Adresse ab.
-    Grünflächen mit gleichem Namen werden zusammengefasst.
-    """
-
     lat_delta = radius / 111000
     lon_delta = radius / (
         111000 * math.cos(math.radians(latitude))
@@ -162,12 +153,6 @@ def get_nearby_green_spaces(latitude, longitude, radius=1200):
 
 
 def calculate_green_grade(latitude, longitude):
-    """
-    Berechnet die Grünflächen-Schulnote von 1 bis 5.
-
-    Rückgabe:
-        note, naechste_entfernung, anzahl_in_750m, gruenflaechen
-    """
 
     green_spaces = get_nearby_green_spaces(
         latitude,
