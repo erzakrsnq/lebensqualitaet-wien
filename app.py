@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 import requests
 
@@ -10,7 +11,6 @@ app = Flask(__name__)
 
 def get_coordinates(address):
     url = "https://data.wien.gv.at/daten/OGDAddressService.svc/GetAddressInfo"
-
     params = {
         "Address": address,
         "crs": "EPSG:4326"
@@ -19,17 +19,12 @@ def get_coordinates(address):
     try:
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
-
         data = response.json()
 
         if not data.get("features"):
             return None
 
-        coordinates = data["features"][0]["geometry"]["coordinates"]
-
-        longitude = coordinates[0]
-        latitude = coordinates[1]
-
+        longitude, latitude = data["features"][0]["geometry"]["coordinates"][:2]
         return latitude, longitude
 
     except (
@@ -40,6 +35,29 @@ def get_coordinates(address):
         TypeError
     ):
         return None
+
+
+def calculate_overall_grade(profile, transport_grade, green_grade, education_grade):
+    if profile == "senior":
+        weights = {
+            "transport": 0.45,
+            "green": 0.45,
+            "education": 0.10
+        }
+    else:
+        weights = {
+            "transport": 0.40,
+            "green": 0.20,
+            "education": 0.40
+        }
+
+    overall_grade = (
+        transport_grade * weights["transport"]
+        + green_grade * weights["green"]
+        + education_grade * weights["education"]
+    )
+
+    return round(overall_grade, 2), weights
 
 
 @app.route("/")
@@ -59,6 +77,13 @@ def berechnen():
             400
         )
 
+    if profil not in ("student", "senior"):
+        return (
+            '<h1>Bitte ein gültiges Nutzerprofil auswählen</h1>'
+            '<a href="/">Zurück</a>',
+            400
+        )
+
     coordinates = get_coordinates(adresse)
 
     if coordinates is None:
@@ -71,22 +96,17 @@ def berechnen():
 
     latitude, longitude = coordinates
 
-    # 1. Öffentliche Verkehrsmittel
     try:
         oeffi_note, oeffi_punkte, oeffi_linien = calculate_transport_grade(
-            latitude,
-            longitude
+            latitude, longitude
         )
-
     except (requests.RequestException, ValueError, KeyError, TypeError):
         return (
             '<h1>Öffi-Daten momentan nicht verfügbar</h1>'
-            '<p>Bitte versuche es später erneut.</p>'
             '<a href="/">Zurück</a>',
             503
         )
 
-    # 2. Grünflächen
     try:
         (
             gruen_note,
@@ -94,30 +114,32 @@ def berechnen():
             gruen_anzahl,
             gruenflaechen
         ) = calculate_green_grade(latitude, longitude)
-
     except (requests.RequestException, ValueError, KeyError, TypeError):
         return (
             '<h1>Grünflächen-Daten momentan nicht verfügbar</h1>'
-            '<p>Bitte versuche es später erneut.</p>'
             '<a href="/">Zurück</a>',
             503
         )
 
-    # 3. Bildung
     try:
         (
             bildung_note,
             bildung_punkte,
             bildung_einrichtungen
         ) = calculate_education_grade(latitude, longitude)
-
     except (requests.RequestException, ValueError, KeyError, TypeError):
         return (
             '<h1>Bildungsdaten momentan nicht verfügbar</h1>'
-            '<p>Bitte versuche es später erneut.</p>'
             '<a href="/">Zurück</a>',
             503
         )
+
+    gesamtnote, gewichtung = calculate_overall_grade(
+        profil,
+        oeffi_note,
+        gruen_note,
+        bildung_note
+    )
 
     return render_template(
         "result.html",
@@ -125,6 +147,8 @@ def berechnen():
         profil=profil,
         latitude=latitude,
         longitude=longitude,
+        gesamtnote=gesamtnote,
+        gewichtung=gewichtung,
         oeffi_note=oeffi_note,
         oeffi_punkte=oeffi_punkte,
         oeffi_linien=oeffi_linien,
