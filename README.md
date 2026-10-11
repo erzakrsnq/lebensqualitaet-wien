@@ -41,6 +41,3 @@ docker run --rm -p 5050:5000 wienleben
 ```
 
 **Hinweis:** Für die Abfrage der Wiener Open-Data-Dienste ist eine Internetverbindung erforderlich.
-
-**Projekt:** Innovation Lab  
-**Auftraggeber:** Harald Wahl
