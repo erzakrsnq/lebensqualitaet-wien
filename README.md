@@ -30,14 +30,3 @@ Anschließend im Browser öffnen:
 **http://localhost:5050**
 
 Zum Beenden **Ctrl + C** drücken.
-
-## Fertiges Docker-Image laden
-
-Falls die Datei `wienleben-docker.tar` vorhanden ist:
-
-```bash
-docker load -i wienleben-docker.tar
-docker run --rm -p 5050:5000 wienleben
-```
-
-**Hinweis:** Für die Abfrage der Wiener Open-Data-Dienste ist eine Internetverbindung erforderlich.
